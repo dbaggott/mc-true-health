@@ -30,10 +30,10 @@ public final class FoodReadout {
 
 	/**
 	 * Layout toggle. Flip the value of {@link #FORMAT} below to switch
-	 * between displays; one will be deleted once we pick.
+	 * between displays; the losers will be deleted once we pick.
 	 */
 	private enum FoodFormat {
-		/** "F 18 · S 3.5" — food level + hidden saturation float, both visible. */
+		/** "18 / 20 · S 3.5" — food level in X/Y form (mirrors HP), plus saturation. */
 		FULL,
 		/** "Sat 3.5 / 20" — saturation only (food level already precise on the bar). */
 		SATURATION_ONLY
@@ -77,7 +77,10 @@ public final class FoodReadout {
 
 	private static String format(FoodData food) {
 		return switch (FORMAT) {
-			case FULL -> String.format("F %d · S %.1f", food.getFoodLevel(), food.getSaturationLevel());
+			// Food level uses the same "%d / 20" shape as HP's "%.1f / %.0f"
+			// so the left and right readouts read as a matched pair. The
+			// hidden saturation float follows after a middle dot.
+			case FULL -> String.format("%d / 20 · S %.1f", food.getFoodLevel(), food.getSaturationLevel());
 			case SATURATION_ONLY -> String.format("Sat %.1f / 20", food.getSaturationLevel());
 		};
 	}
