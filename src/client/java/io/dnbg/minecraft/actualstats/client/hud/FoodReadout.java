@@ -8,6 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.food.FoodData;
 
@@ -79,7 +81,17 @@ public final class FoodReadout {
 		int screenWidth = mc.getWindow().getGuiScaledWidth();
 		int screenHeight = mc.getWindow().getGuiScaledHeight();
 
-		FoodData food = player.getFoodData();
+		// IMPORTANT: vanilla only sends ClientboundSetHealthPacket when
+		// (health changes) || (foodLevel changes) || (saturation crosses
+		// zero — tracked via ServerPlayer.lastFoodSaturationZero). So the
+		// client's local FoodData.saturationLevel can stay stale for many
+		// server-side decrements while the player sees the bar reset
+		// repeatedly with no apparent sat change, then jumps from some old
+		// value directly to 0 once the server's sat actually crosses zero.
+		// In single-player we read FoodData straight from the integrated
+		// server's player instance to dodge that lag entirely. In
+		// multiplayer we accept the stale value — there's no other source.
+		FoodData food = serverSideFoodData(mc, player).orElse(player.getFoodData());
 
 		// Stack our overlay above any row vanilla is currently drawing above
 		// the food bar (oxygen bubbles when underwater / regenerating air;
@@ -116,5 +128,21 @@ public final class FoodReadout {
 			int fillColor = exh.exact() ? COLOR_EXHAUSTION_FILL_EXACT : COLOR_EXHAUSTION_FILL_ESTIMATED;
 			extractor.fill(barLeftX, barTopY, barLeftX + fillWidth, barBottomY, fillColor);
 		}
+	}
+
+	/**
+	 * Returns the server-side {@link FoodData} for the local player when
+	 * we're running an integrated server (single-player). Empty otherwise.
+	 * The server-side instance has the real-time {@code saturationLevel}
+	 * the client never receives over the wire (see the comment in
+	 * {@link #extract} for the vanilla packet-trigger detail).
+	 */
+	private static java.util.Optional<FoodData> serverSideFoodData(Minecraft mc, LocalPlayer player) {
+		if (!mc.hasSingleplayerServer()) {
+			return java.util.Optional.empty();
+		}
+		IntegratedServer server = mc.getSingleplayerServer();
+		ServerPlayer sp = server.getPlayerList().getPlayer(player.getUUID());
+		return java.util.Optional.ofNullable(sp).map(ServerPlayer::getFoodData);
 	}
 }
