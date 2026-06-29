@@ -56,6 +56,21 @@ public final class HpReadout {
 	private static final int ICON_HEIGHT = 9;
 	/** Tiny gap between the icon and the text so they don't bleed together. */
 	private static final int ICON_TEXT_GAP = 2;
+	/**
+	 * 1-px black outline drawn by stamping the heart silhouette in solid
+	 * black at four cardinal offsets before drawing the real red heart on
+	 * top. Width adds to the icon's effective footprint and pushes the
+	 * text right by one extra pixel so the gap stays visually constant.
+	 */
+	private static final int OUTLINE_WIDTH = 1;
+	/** Full-opacity black, tinted onto the heart sprite for outline stamps. */
+	private static final int OUTLINE_COLOR = 0xFF000000;
+	/**
+	 * Vertical nudge for the heart so its visual centre aligns with the
+	 * text's. The 9-px heart vs 8-px font height puts the heart 0.5 px low
+	 * by default; raising it 1 px reads better than no offset.
+	 */
+	private static final int ICON_Y_NUDGE = -1;
 
 	private HpReadout() {
 	}
@@ -95,11 +110,20 @@ public final class HpReadout {
 		int x = screenWidth / 2 - HOTBAR_HALF_WIDTH;
 		int y = screenHeight - HEART_BAR_BOTTOM_OFFSET - yGap;
 
-		// Label: a real heart icon, so the floating numbers are self-
+		// Label: a real heart icon so the floating numbers are self-
 		// identifying even when armor/absorption rows push them far above
-		// the vanilla heart bar.
-		extractor.blitSprite(RenderPipelines.GUI_TEXTURED, HEART_ICON, x, y, ICON_WIDTH, ICON_HEIGHT);
-		int textX = x + ICON_WIDTH + ICON_TEXT_GAP;
+		// the vanilla heart bar. A 1-px black outline is added by stamping
+		// the heart in solid black at the four cardinal +/-1 offsets first,
+		// then the real red heart on top. The tint preserves the sprite's
+		// alpha, so the outline traces the heart's actual silhouette
+		// rather than a square box around it.
+		int iconY = y + ICON_Y_NUDGE;
+		extractor.blitSprite(RenderPipelines.GUI_TEXTURED, HEART_ICON, x - OUTLINE_WIDTH, iconY,                 ICON_WIDTH, ICON_HEIGHT, OUTLINE_COLOR);
+		extractor.blitSprite(RenderPipelines.GUI_TEXTURED, HEART_ICON, x + OUTLINE_WIDTH, iconY,                 ICON_WIDTH, ICON_HEIGHT, OUTLINE_COLOR);
+		extractor.blitSprite(RenderPipelines.GUI_TEXTURED, HEART_ICON, x,                  iconY - OUTLINE_WIDTH, ICON_WIDTH, ICON_HEIGHT, OUTLINE_COLOR);
+		extractor.blitSprite(RenderPipelines.GUI_TEXTURED, HEART_ICON, x,                  iconY + OUTLINE_WIDTH, ICON_WIDTH, ICON_HEIGHT, OUTLINE_COLOR);
+		extractor.blitSprite(RenderPipelines.GUI_TEXTURED, HEART_ICON, x,                  iconY,                 ICON_WIDTH, ICON_HEIGHT);
+		int textX = x + ICON_WIDTH + OUTLINE_WIDTH + ICON_TEXT_GAP;
 
 		String text = formatHp(player.getHealth(), player.getMaxHealth(), absorption);
 		extractor.text(font, text, textX, y, COLOR_HP, true);
