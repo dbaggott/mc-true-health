@@ -1,6 +1,7 @@
 package io.dnbg.minecraft.actualstats.client.hud;
 
 import io.dnbg.minecraft.actualstats.ActualStats;
+import java.util.Locale;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.DeltaTracker;
@@ -97,17 +98,34 @@ public final class HpReadout {
 		// Label: the heart glyph inlined as part of the text, so it shares
 		// the text's color, shadow, and baseline. Sized at font height,
 		// it's visually obviously a label rather than another data heart.
-		String hpText = String.format("%s %.2f / %.0f", HP_LABEL, player.getHealth(), player.getMaxHealth());
+		String hpText = HP_LABEL + " " + fmtHp(player.getHealth()) + " / " + fmtHp(player.getMaxHealth());
 		extractor.text(font, hpText, x, y, COLOR_HP, true);
 
 		// When absorption is active, append a gold segment after the HP
-		// text. The leading space in " + %.2f" provides symmetric padding
-		// on both sides of the plus sign so it reads like the " / " in the
-		// HP text.
+		// text. The leading and trailing spaces give the plus sign
+		// symmetric padding, mirroring the " / " inside the HP text.
 		if (absorption > 0) {
 			int absTextX = x + font.width(hpText);
-			String absText = String.format(" + %.2f", absorption);
+			String absText = " + " + fmtHp(absorption);
 			extractor.text(font, absText, absTextX, y, COLOR_ABSORPTION, true);
 		}
+	}
+
+	/**
+	 * Formats an HP value with up to two decimals, trimming trailing zeros
+	 * and the decimal point when they're not needed:
+	 *
+	 * <pre>
+	 *   20.0   -> "20"
+	 *   18.30  -> "18.3"
+	 *   18.347 -> "18.35"   (rounded to two decimals)
+	 * </pre>
+	 *
+	 * <p>{@link Locale#ROOT} pinned so a user's locale doesn't introduce a
+	 * comma separator (which would then survive the trailing-zero regex
+	 * and leave dangling commas).
+	 */
+	private static String fmtHp(float value) {
+		return String.format(Locale.ROOT, "%.2f", value).replaceAll("\\.?0+$", "");
 	}
 }
