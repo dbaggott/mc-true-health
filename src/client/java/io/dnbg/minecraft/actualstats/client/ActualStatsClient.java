@@ -1,5 +1,6 @@
 package io.dnbg.minecraft.actualstats.client;
 
+import io.dnbg.minecraft.actualstats.client.hud.ExhaustionTracker;
 import io.dnbg.minecraft.actualstats.client.hud.FoodReadout;
 import io.dnbg.minecraft.actualstats.client.hud.HpReadout;
 import net.fabricmc.api.ClientModInitializer;
@@ -15,6 +16,7 @@ import net.fabricmc.api.ClientModInitializer;
 public class ActualStatsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
+		ExhaustionTracker.register();
 		HpReadout.register();
 		FoodReadout.register();
 	}
