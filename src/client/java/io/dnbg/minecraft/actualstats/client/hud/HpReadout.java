@@ -8,6 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
 
 /**
  * Renders the player's real (un-rounded) HP just above the heart bar,
@@ -40,6 +42,20 @@ public final class HpReadout {
 	private static final int ROW_HEIGHT = 10;
 	/** Soft red — closer to the heart color than pure red, easier on eyes. */
 	private static final int COLOR_HP = 0xFFFF5555;
+
+	/**
+	 * Vanilla's regular full-heart sprite from the HUD atlas. Found via
+	 * decompiling {@code Hud.HeartType.NORMAL} which constructs the
+	 * identifier as {@code "minecraft:hud/heart/full"}. Using the same
+	 * sprite as the vanilla heart bar keeps the icon visually consistent
+	 * with what's already on screen.
+	 */
+	private static final Identifier HEART_ICON = Identifier.fromNamespaceAndPath("minecraft", "hud/heart/full");
+	/** Vanilla heart sprite is 9×9 px. */
+	private static final int ICON_WIDTH = 9;
+	private static final int ICON_HEIGHT = 9;
+	/** Tiny gap between the icon and the text so they don't bleed together. */
+	private static final int ICON_TEXT_GAP = 2;
 
 	private HpReadout() {
 	}
@@ -79,8 +95,14 @@ public final class HpReadout {
 		int x = screenWidth / 2 - HOTBAR_HALF_WIDTH;
 		int y = screenHeight - HEART_BAR_BOTTOM_OFFSET - yGap;
 
+		// Label: a real heart icon, so the floating numbers are self-
+		// identifying even when armor/absorption rows push them far above
+		// the vanilla heart bar.
+		extractor.blitSprite(RenderPipelines.GUI_TEXTURED, HEART_ICON, x, y, ICON_WIDTH, ICON_HEIGHT);
+		int textX = x + ICON_WIDTH + ICON_TEXT_GAP;
+
 		String text = formatHp(player.getHealth(), player.getMaxHealth(), absorption);
-		extractor.text(font, text, x, y, COLOR_HP, true);
+		extractor.text(font, text, textX, y, COLOR_HP, true);
 	}
 
 	/**
