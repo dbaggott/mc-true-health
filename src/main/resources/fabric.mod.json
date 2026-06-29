@@ -8,7 +8,7 @@
 		"Dan Baggott"
 	],
 	"contact": {
-		"sources": "https://github.com/dbaggott/actual-stats"
+		"sources": "https://github.com/dbaggott/mc-actual-stats"
 	},
 	"license": "MIT",
 	"environment": "client",
