@@ -40,8 +40,8 @@ public final class HpReadout {
 	 * drawing in the area immediately above the hearts.
 	 */
 	private static final int ROW_HEIGHT = 10;
-	/** Soft red — closer to the heart color than pure red, easier on eyes. */
-	private static final int COLOR_HP = 0xFFFF5555;
+	/** Bright red that matches the vanilla heart-sprite hue more closely. */
+	private static final int COLOR_HP = 0xFFFF2A2A;
 	/**
 	 * Soft gold for the absorption portion of the line — same brightness
 	 * envelope as {@link #COLOR_HP} so the two segments feel like a pair
@@ -57,11 +57,6 @@ public final class HpReadout {
 	 * with what's already on screen.
 	 */
 	private static final Identifier HEART_ICON = Identifier.fromNamespaceAndPath("minecraft", "hud/heart/full");
-	/**
-	 * Vanilla's golden absorption heart sprite ({@code Hud.HeartType.ABSORBING}'s
-	 * {@code full}). Used as the label for the absorption portion of the line.
-	 */
-	private static final Identifier ABSORPTION_HEART_ICON = Identifier.fromNamespaceAndPath("minecraft", "hud/heart/absorbing_full");
 	/** Vanilla heart sprite is 9×9 px. */
 	private static final int ICON_WIDTH = 9;
 	private static final int ICON_HEIGHT = 9;
@@ -132,16 +127,11 @@ public final class HpReadout {
 		String hpText = String.format("%.2f / %.0f", player.getHealth(), player.getMaxHealth());
 		extractor.text(font, hpText, textX, y, COLOR_HP, true);
 
-		// When absorption is active, append a second segment: a gold heart
-		// icon (the same sprite vanilla uses for absorption hearts) and the
-		// absorption float in gold text. The pairing matches the vanilla
-		// red-vs-gold heart distinction on screen.
+		// When absorption is active, append a gold segment after the HP
+		// text. No icon — the heart is the label for the whole line, and
+		// the gold color carries the "this is absorption" distinction.
 		if (absorption > 0) {
-			int afterHpX = textX + font.width(hpText);
-			int goldIconX = afterHpX + ICON_TEXT_GAP + OUTLINE_WIDTH;
-			stampOutlinedSprite(extractor, ABSORPTION_HEART_ICON, goldIconX, iconY);
-
-			int absTextX = goldIconX + ICON_WIDTH + OUTLINE_WIDTH + ICON_TEXT_GAP;
+			int absTextX = textX + font.width(hpText) + ICON_TEXT_GAP;
 			String absText = String.format("+ %.2f", absorption);
 			extractor.text(font, absText, absTextX, y, COLOR_ABSORPTION, true);
 		}
