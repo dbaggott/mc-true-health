@@ -1,29 +1,29 @@
 {
 	"schemaVersion": 1,
-	"id": "actual_stats",
+	"id": "true_health",
 	"version": "${version}",
-	"name": "Actual Stats",
+	"name": "True Health",
 	"description": "Shows real (un-rounded) HP for you, your target, and the damage your attacks deal.",
 	"authors": [
 		"Dan Baggott"
 	],
 	"contact": {
-		"sources": "https://github.com/dbaggott/mc-actual-stats"
+		"sources": "https://github.com/dbaggott/mc-true-health"
 	},
 	"license": "MIT",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
-			"io.dnbg.minecraft.actualstats.ActualStats"
+			"io.dnbg.minecraft.truehealth.TrueHealth"
 		],
 		"client": [
-			"io.dnbg.minecraft.actualstats.client.ActualStatsClient"
+			"io.dnbg.minecraft.truehealth.client.TrueHealthClient"
 		]
 	},
 	"mixins": [
-		"actual_stats.mixins.json",
+		"true_health.mixins.json",
 		{
-			"config": "actual_stats.client.mixins.json",
+			"config": "true_health.client.mixins.json",
 			"environment": "client"
 		}
 	],

@@ -1,6 +1,6 @@
-package io.dnbg.minecraft.actualstats.client.hud;
+package io.dnbg.minecraft.truehealth.client.hud;
 
-import io.dnbg.minecraft.actualstats.ActualStats;
+import io.dnbg.minecraft.truehealth.TrueHealth;
 import java.util.Locale;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -63,7 +63,7 @@ public final class HpReadout {
 	public static void register() {
 		HudElementRegistry.attachElementAfter(
 			VanillaHudElements.HEALTH_BAR,
-			ActualStats.id("hp_readout"),
+			TrueHealth.id("hp_readout"),
 			HpReadout::extract
 		);
 	}

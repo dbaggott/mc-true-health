@@ -1,6 +1,6 @@
-package io.dnbg.minecraft.actualstats.client;
+package io.dnbg.minecraft.truehealth.client;
 
-import io.dnbg.minecraft.actualstats.client.hud.HpReadout;
+import io.dnbg.minecraft.truehealth.client.hud.HpReadout;
 import net.fabricmc.api.ClientModInitializer;
 
 /**
@@ -11,7 +11,7 @@ import net.fabricmc.api.ClientModInitializer;
  * under {@code client.hud} / sibling sub-packages — this file stays as a
  * small wiring hub so new features land as one-line additions here.
  */
-public class ActualStatsClient implements ClientModInitializer {
+public class TrueHealthClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		HpReadout.register();

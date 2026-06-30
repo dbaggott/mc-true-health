@@ -1,6 +1,7 @@
 plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id 'maven-publish'
+	id 'me.modmuss50.mod-publish-plugin' version '2.1.1'
 }
 
 version = project.mod_version
@@ -18,7 +19,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"actual_stats" {
+		"true_health" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}
@@ -73,5 +74,50 @@ publishing {
 		// Publishing targets (e.g. GitHub Packages, internal Maven) go here
 		// when we have somewhere to publish to. CI uploads the jar as a
 		// build artifact in the meantime.
+	}
+}
+
+// Publishes the remapped mod jar to Modrinth and as a GitHub Release.
+// Trigger with:
+//   MODRINTH_API_KEY=… GITHUB_TOKEN=$(gh auth token) ./gradlew publishMods
+// Or scope to one platform: publishModrinth / publishGithub.
+publishMods {
+	// Use the standard `jar` task's output. In modern Loom the `jar` task
+	// produces the remapped production jar directly (no separate
+	// `remapJar` task); `project.tasks.jar.archiveFile` is a lazy provider
+	// resolved at execution time.
+	file = project.tasks.jar.archiveFile
+	changelog = """\
+First user-facing release: real (un-rounded) HP above the heart bar.
+
+- Heart-glyph label + float HP (e.g. `♥ 18.5 / 20`); trailing-zero trim, so `20` not `20.00`.
+- Absorption shown inline in gold (`+ 8`) when active.
+- Y-offset dynamically clears armor and absorption rows above the heart bar — no overlap with the vanilla HUD.
+"""
+	// 0.x signals still-pre-stable per the PR description's own framing;
+	// BETA matches that on the Modrinth release-channel label too.
+	type = BETA
+	modLoaders.add("fabric")
+
+	modrinth {
+		projectId = providers.gradleProperty('modrinth_project_id').getOrElse('PLACEHOLDER_SET_ME')
+		accessToken = providers.environmentVariable("MODRINTH_API_KEY")
+		minecraftVersions.add("26.2")
+		requires {
+			slug = "fabric-api"
+		}
+	}
+
+	github {
+		repository = "dbaggott/mc-true-health"
+		accessToken = providers.environmentVariable("GITHUB_TOKEN")
+		// Pin the release/tag to the actual commit being built. On a
+		// tag-push trigger GITHUB_SHA is the tagged commit; on a
+		// workflow_dispatch with ref=some-branch it's that branch's HEAD;
+		// on a local run it's unset and we fall back to "main". Hardcoding
+		// "main" meant a dispatch from a branch would build from the
+		// branch but cut the GitHub Release against main's HEAD instead.
+		commitish = providers.environmentVariable("GITHUB_SHA").orElse("main")
+		tagName = "v${project.mod_version}"
 	}
 }

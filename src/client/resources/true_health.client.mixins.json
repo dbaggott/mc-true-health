@@ -1,8 +1,8 @@
 {
 	"required": true,
-	"package": "io.dnbg.minecraft.actualstats.mixin",
+	"package": "io.dnbg.minecraft.truehealth.client.mixin",
 	"compatibilityLevel": "JAVA_25",
-	"mixins": [],
+	"client": [],
 	"injectors": {
 		"defaultRequire": 1
 	},
