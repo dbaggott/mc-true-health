@@ -7,12 +7,12 @@ on:
   push:
     tags:
       - 'v*'
+  # Manual dispatch picks the branch/tag from the Actions "Run workflow"
+  # dropdown — github.ref tracks that, and checkout + GITHUB_SHA stay in
+  # lockstep. No `inputs:` here so the dropdown ref is the single source
+  # of truth (a free-text inputs.ref field would reintroduce the same
+  # divergence class the previous commit's commitish change closed).
   workflow_dispatch:
-    inputs:
-      ref:
-        description: 'Branch or commit to release from (default: main)'
-        required: false
-        default: 'main'
 
 # contents:write is needed for the github destination in publishMods —
 # it creates the v<version> tag (if not already present) and the Release.
@@ -25,7 +25,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.ref || github.ref }}
           fetch-depth: 0
 
       - uses: actions/setup-java@v4
