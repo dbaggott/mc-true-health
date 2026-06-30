@@ -1,8 +1,8 @@
-# True Health
+# TruHeart
 
 The vanilla heart bar lies a little. It rounds your health to the nearest half-heart pip, so the actual float Minecraft uses internally is hidden — that pip showing "9½ hearts" might really mean `19.00`, `19.45`, or `18.91`, and you'd never know.
 
-**True Health** prints the real number, in red, right above your heart bar.
+**TruHeart** prints the real number, in red, right above your heart bar.
 
 > ♥ 18.5 / 20
 
@@ -16,7 +16,7 @@ That's it. One small overlay, one line of text. Half-second to learn, instant to
 
 ## Why you might want this
 
-- **You can see when small damage actually hit you.** Fire ticks, magic damage, environmental wear — the heart pips snap to half-hearts and lose the in-between numbers. True Health shows you the exact `0.42` your shield just absorbed.
+- **You can see when small damage actually hit you.** Fire ticks, magic damage, environmental wear — the heart pips snap to half-hearts and lose the in-between numbers. TruHeart shows you the exact `0.42` your shield just absorbed.
 - **You can see regen working in real time.** Watch HP tick up by the actual `0.5` or `1.0` increments instead of waiting for a pip to flip.
 - **PVP / hardcore players know what's about to kill them.** "One more hit" and "one more half-pip" aren't the same thing.
 

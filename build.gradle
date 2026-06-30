@@ -19,7 +19,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"true_health" {
+		"truheart" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}
@@ -109,7 +109,7 @@ First user-facing release: real (un-rounded) HP above the heart bar.
 	}
 
 	github {
-		repository = "dbaggott/mc-true-health"
+		repository = "dbaggott/mc-truheart"
 		accessToken = providers.environmentVariable("GITHUB_TOKEN")
 		// Pin the release/tag to the actual commit being built. On a
 		// tag-push trigger GITHUB_SHA is the tagged commit; on a

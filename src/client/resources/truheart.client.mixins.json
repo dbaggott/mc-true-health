@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "io.dnbg.minecraft.truehealth.client.mixin",
+	"package": "io.dnbg.minecraft.truheart.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [],
 	"injectors": {

@@ -2,7 +2,7 @@
   {
     "file": "02-fractional-hp.png",
     "title": "Real HP, two decimals",
-    "description": "Float HP rendered above the heart bar. The vanilla heart row reads 7 hearts (14); True Health shows 14.02 — the value Minecraft is actually computing.",
+    "description": "Float HP rendered above the heart bar. The vanilla heart row reads 7 hearts (14); TruHeart shows 14.02 — the value Minecraft is actually computing.",
     "featured": true,
     "ordering": 0
   },

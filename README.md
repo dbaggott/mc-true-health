@@ -1,4 +1,4 @@
-# True Health
+# TruHeart
 
 A small client-side Minecraft mod (Fabric) that surfaces the *real* numerical health and damage values the game uses internally — no rounding to half-hearts.
 
@@ -32,9 +32,9 @@ Prerequisites: `mise`, `git`.
 
 ```bash
 git clone <repo-url>
-cd true-health
+cd truheart
 mise install        # provisions Temurin 25 per mise.toml
-./gradlew build     # produces build/libs/true-health-<version>.jar
+./gradlew build     # produces build/libs/truheart-<version>.jar
 ```
 
 ## Develop in IntelliJ IDEA
@@ -45,7 +45,7 @@ mise install        # provisions Temurin 25 per mise.toml
 
 ## Install the built jar into a real instance
 
-Drop `build/libs/true-health-<version>.jar` (the un-suffixed file — not `-sources` or `-dev`) into your Minecraft instance's `mods/` folder, alongside Fabric Loader and Fabric API jars matching the versions above.
+Drop `build/libs/truheart-<version>.jar` (the un-suffixed file — not `-sources` or `-dev`) into your Minecraft instance's `mods/` folder, alongside Fabric Loader and Fabric API jars matching the versions above.
 
 ## Project layout
 
@@ -54,9 +54,9 @@ build.gradle, settings.gradle, gradle.properties   — build config
 mise.toml                                            — JDK pin (Temurin 25)
 src/main/                                            — shared (client + server) code
 src/main/resources/fabric.mod.json                   — mod metadata
-src/main/resources/true_health.mixins.json          — shared mixin config
+src/main/resources/truheart.mixins.json          — shared mixin config
 src/client/                                          — client-only code (HUD lives here)
-src/client/resources/true_health.client.mixins.json — client mixin config
+src/client/resources/truheart.client.mixins.json — client mixin config
 .github/workflows/build.yml                          — CI: gradle build on push/PR
 ```
 
@@ -69,9 +69,9 @@ To start another mod from this scaffold, the pieces that need changing are, top 
 1. `settings.gradle` — `rootProject.name`
 2. `gradle.properties` — `mod_version`; bump MC/loader/API versions as needed
 3. `fabric.mod.json` — `id`, `name`, `description`, `entrypoints`, `mixins`
-4. **Package rename** — `src/{main,client}/java/io/dnbg/minecraft/truehealth/` → `…/<newmod>/`; update imports
-5. **Mixin configs** — rename `true_health.mixins.json` / `true_health.client.mixins.json` to match the new mod id; update their `package` fields and the `mixins` reference in `fabric.mod.json`
-6. `assets/true_health/` → `assets/<newmod>/`
+4. **Package rename** — `src/{main,client}/java/io/dnbg/minecraft/truheart/` → `…/<newmod>/`; update imports
+5. **Mixin configs** — rename `truheart.mixins.json` / `truheart.client.mixins.json` to match the new mod id; update their `package` fields and the `mixins` reference in `fabric.mod.json`
+6. `assets/truheart/` → `assets/<newmod>/`
 7. `README.md` content
 8. `LICENSE` — keep MIT or replace
 

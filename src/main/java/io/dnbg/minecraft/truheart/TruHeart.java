@@ -1,4 +1,4 @@
-package io.dnbg.minecraft.truehealth;
+package io.dnbg.minecraft.truheart;
 
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.Identifier;
@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
  * as client-only (see {@code fabric.mod.json}'s {@code "environment"}).
  *
  * <p>Keep this thin — HUD and other client-only wiring live in
- * {@link io.dnbg.minecraft.truehealth.client.TrueHealthClient}.
+ * {@link io.dnbg.minecraft.truheart.client.TruHeartClient}.
  */
-public class TrueHealth implements ModInitializer {
-	public static final String MOD_ID = "true_health";
+public class TruHeart implements ModInitializer {
+	public static final String MOD_ID = "truheart";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	@Override
