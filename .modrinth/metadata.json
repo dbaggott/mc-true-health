@@ -1,0 +1,16 @@
+{
+  "description": "Real (un-rounded) health above your heart bar.",
+
+  "source_url": "https://github.com/dbaggott/mc-true-health",
+  "issues_url": "https://github.com/dbaggott/mc-true-health/issues",
+
+  "license_id": "MIT",
+
+  "categories": [
+    "utility",
+    "game-mechanics"
+  ],
+
+  "client_side": "required",
+  "server_side": "unsupported"
+}

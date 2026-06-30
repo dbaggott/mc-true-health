@@ -1,0 +1,56 @@
+name: sync-project
+
+# When anything in .modrinth/ changes on main, sync the Modrinth project's
+# fields to match. .modrinth/ is the single source of truth; the web UI
+# becomes a read-through of what's in the repo.
+#
+# Fields synced:
+#   - body          ← .modrinth/description.md (the long markdown page)
+#   - everything else (description / summary, source_url, issues_url,
+#     license_id, categories, client_side, server_side, …)
+#                   ← .modrinth/metadata.json
+#
+# To add a new field, just add it to metadata.json — the workflow PATCHes
+# whatever's in the file, no workflow edit needed.
+on:
+  push:
+    branches: [main]
+    paths: ['.modrinth/**']
+  # Manual dispatch if you ever need to force-reapply .modrinth/ after a
+  # drift in the Modrinth web UI.
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync .modrinth/ to Modrinth project
+        env:
+          MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          PROJECT_ID=$(grep '^modrinth_project_id=' gradle.properties | cut -d= -f2)
+          if [ -z "$PROJECT_ID" ]; then
+            echo "::error::modrinth_project_id is empty in gradle.properties"
+            exit 1
+          fi
+
+          # JSON-encode the markdown body and splice it into metadata.json
+          # under the `body` key. The result is the literal PATCH payload.
+          BODY_JSON=$(jq -Rs . < .modrinth/description.md)
+          PAYLOAD=$(jq --argjson body "$BODY_JSON" '. + { body: $body }' \
+                    .modrinth/metadata.json)
+
+          # -sS (not -s) keeps the progress meter quiet but lets curl
+          # print its error line on failure. With bare -s, an HTTP 4xx
+          # (e.g. 401 if the PAT lacks Write projects) fails with a bare
+          # exit 22 and no log explanation of why.
+          curl -sSf -X PATCH \
+            -H "Authorization: $MODRINTH_API_KEY" \
+            -H "Content-Type: application/json" \
+            "https://api.modrinth.com/v2/project/$PROJECT_ID" \
+            --data "$PAYLOAD"
+          echo "Modrinth project $PROJECT_ID synced from .modrinth/."
