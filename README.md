@@ -1,8 +1,14 @@
 # TrueHearts
 
+[![Modrinth downloads](https://img.shields.io/modrinth/dt/dnbg-truehearts?label=downloads&logo=modrinth&color=00AF5C)](https://modrinth.com/mod/dnbg-truehearts)
+[![Modrinth game versions](https://img.shields.io/modrinth/game-versions/dnbg-truehearts?logo=modrinth&color=00AF5C&label=for%20MC)](https://modrinth.com/mod/dnbg-truehearts)
+[![Latest release](https://img.shields.io/github/v/release/dbaggott/mc-truehearts?logo=github&label=release)](https://github.com/dbaggott/mc-truehearts/releases/latest)
+[![Build](https://img.shields.io/github/actions/workflow/status/dbaggott/mc-truehearts/build.yml?branch=main&logo=github&label=build)](https://github.com/dbaggott/mc-truehearts/actions/workflows/build.yml)
+[![License](https://img.shields.io/github/license/dbaggott/mc-truehearts)](LICENSE)
+
 A small client-side Minecraft mod (Fabric) that surfaces the *real* numerical health and damage values the game uses internally — no rounding to half-hearts.
 
-## Shipped (v0.2.0)
+## Shipped (v1.0.0)
 
 - **Your own current/max HP** as a float above the heart bar (e.g. `♥ 18.5 / 20`), with trailing-zero trim so a whole-number HP reads as `20`, not `20.00`.
 - **Absorption** shown inline in gold (`+ 8`) when active.
