@@ -81,19 +81,33 @@ publishing {
 // Trigger with:
 //   MODRINTH_API_KEY=… GITHUB_TOKEN=$(gh auth token) ./gradlew publishMods
 // Or scope to one platform: publishModrinth / publishGithub.
+
+// Per-version changelog file lives at .modrinth/changelogs/${mod_version}.md
+// and the publish reads it lazily. See .modrinth/changelogs/README.md for
+// the convention. A fail-fast guard below errors at publish time if the
+// file doesn't exist for the current version.
+def changelogPath = ".modrinth/changelogs/${project.mod_version}.md"
+def changelogFile = layout.projectDirectory.file(changelogPath)
+
 publishMods {
 	// Use the standard `jar` task's output. In modern Loom the `jar` task
 	// produces the remapped production jar directly (no separate
 	// `remapJar` task); `project.tasks.jar.archiveFile` is a lazy provider
 	// resolved at execution time.
 	file = project.tasks.jar.archiveFile
-	changelog = """\
-First user-facing release: real (un-rounded) HP above the heart bar.
-
-- Heart-glyph label + float HP (e.g. `♥ 18.5 / 20`); trailing-zero trim, so `20` not `20.00`.
-- Absorption shown inline in gold (`+ 8`) when active.
-- Y-offset dynamically clears armor and absorption rows above the heart bar — no overlap with the vanilla HUD.
-"""
+	// Custom lazy Provider rather than providers.fileContents(...).asText
+	// so we control the error path: providers.fileContents on a missing
+	// file would surface as "platform.changelog doesn't have a configured
+	// value" from inside the publish plugin, which doesn't point at the
+	// real problem. Throwing here gives a direct missing-file message.
+	changelog = provider {
+		if (!changelogFile.asFile.exists()) {
+			throw new GradleException(
+				"Changelog file ${changelogPath} not found. Create one before publishing v${project.mod_version}."
+			)
+		}
+		changelogFile.asFile.text
+	}
 	// 0.x signals still-pre-stable per the PR description's own framing;
 	// BETA matches that on the Modrinth release-channel label too.
 	type = BETA
@@ -121,3 +135,4 @@ First user-facing release: real (un-rounded) HP above the heart bar.
 		tagName = "v${project.mod_version}"
 	}
 }
+
