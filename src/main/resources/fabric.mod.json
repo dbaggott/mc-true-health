@@ -1,29 +1,29 @@
 {
 	"schemaVersion": 1,
-	"id": "truheart",
+	"id": "truehearts",
 	"version": "${version}",
-	"name": "TruHeart",
+	"name": "TrueHearts",
 	"description": "Shows real (un-rounded) HP for you, your target, and the damage your attacks deal.",
 	"authors": [
 		"dbaggott"
 	],
 	"contact": {
-		"sources": "https://github.com/dbaggott/mc-truheart"
+		"sources": "https://github.com/dbaggott/mc-truehearts"
 	},
 	"license": "MIT",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
-			"io.dnbg.minecraft.truheart.TruHeart"
+			"io.dnbg.minecraft.truehearts.TrueHearts"
 		],
 		"client": [
-			"io.dnbg.minecraft.truheart.client.TruHeartClient"
+			"io.dnbg.minecraft.truehearts.client.TrueHeartsClient"
 		]
 	},
 	"mixins": [
-		"truheart.mixins.json",
+		"truehearts.mixins.json",
 		{
-			"config": "truheart.client.mixins.json",
+			"config": "truehearts.client.mixins.json",
 			"environment": "client"
 		}
 	],

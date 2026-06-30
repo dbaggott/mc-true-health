@@ -1,6 +1,6 @@
-package io.dnbg.minecraft.truheart.client;
+package io.dnbg.minecraft.truehearts.client;
 
-import io.dnbg.minecraft.truheart.client.hud.HpReadout;
+import io.dnbg.minecraft.truehearts.client.hud.HpReadout;
 import net.fabricmc.api.ClientModInitializer;
 
 /**
@@ -11,7 +11,7 @@ import net.fabricmc.api.ClientModInitializer;
  * under {@code client.hud} / sibling sub-packages — this file stays as a
  * small wiring hub so new features land as one-line additions here.
  */
-public class TruHeartClient implements ClientModInitializer {
+public class TrueHeartsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		HpReadout.register();

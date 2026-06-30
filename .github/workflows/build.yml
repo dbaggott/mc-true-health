@@ -24,6 +24,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: truheart-jar
+          name: truehearts-jar
           path: build/libs/*.jar
           if-no-files-found: error

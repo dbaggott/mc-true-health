@@ -1,6 +1,6 @@
-package io.dnbg.minecraft.truheart.client.hud;
+package io.dnbg.minecraft.truehearts.client.hud;
 
-import io.dnbg.minecraft.truheart.TruHeart;
+import io.dnbg.minecraft.truehearts.TrueHearts;
 import java.util.Locale;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
@@ -63,7 +63,7 @@ public final class HpReadout {
 	public static void register() {
 		HudElementRegistry.attachElementAfter(
 			VanillaHudElements.HEALTH_BAR,
-			TruHeart.id("hp_readout"),
+			TrueHearts.id("hp_readout"),
 			HpReadout::extract
 		);
 	}
