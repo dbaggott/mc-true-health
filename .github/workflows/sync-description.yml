@@ -1,0 +1,43 @@
+name: sync-description
+
+# When MODRINTH.md changes on main, PATCH the Modrinth project's body
+# field to match. MODRINTH.md becomes the single source of truth; the
+# web UI just reflects what's in the repo.
+#
+# The first merge to main that lands MODRINTH.md will itself trigger
+# this workflow, so the initial sync happens for free without a
+# dedicated step.
+on:
+  push:
+    branches: [main]
+    paths: ['MODRINTH.md']
+  # Manual dispatch if you ever need to force-reapply MODRINTH.md after
+  # an edit in the Modrinth web UI (i.e. the web UI drifted).
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync MODRINTH.md to Modrinth project description
+        env:
+          MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
+        run: |
+          set -euo pipefail
+          PROJECT_ID=$(grep '^modrinth_project_id=' gradle.properties | cut -d= -f2)
+          if [ -z "$PROJECT_ID" ]; then
+            echo "::error::modrinth_project_id is empty in gradle.properties"
+            exit 1
+          fi
+          # JSON-escape the file's contents into a string value, then
+          # PATCH the project's `body` field (which Modrinth renders as
+          # the markdown description on the project page).
+          BODY=$(jq -Rs . < MODRINTH.md)
+          curl -sf -X PATCH \
+            -H "Authorization: $MODRINTH_API_KEY" \
+            -H "Content-Type: application/json" \
+            "https://api.modrinth.com/v2/project/$PROJECT_ID" \
+            --data "{\"body\": $BODY}"
+          echo "Modrinth project $PROJECT_ID description synced from MODRINTH.md."
