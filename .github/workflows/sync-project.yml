@@ -114,6 +114,11 @@ jobs:
               exit 1
             fi
             EXT="${FILE##*.}"
+            # Map non-standard MIME aliases to their canonical form so a
+            # `.jpg` file still sends `Content-Type: image/jpeg`. The `ext`
+            # query param keeps the file extension as-is.
+            MIME_EXT="$EXT"
+            [ "$MIME_EXT" = "jpg" ] && MIME_EXT="jpeg"
 
             QS="ext=$EXT&featured=$FEATURED&ordering=$ORDERING"
             if [ -n "$TITLE" ]; then
@@ -125,7 +130,7 @@ jobs:
 
             curl -sS --fail-with-body -X POST \
               -H "Authorization: $MODRINTH_API_KEY" \
-              -H "Content-Type: image/$EXT" \
+              -H "Content-Type: image/$MIME_EXT" \
               --data-binary "@.modrinth/gallery/$FILE" \
               "https://api.modrinth.com/v2/project/$PROJECT_ID/gallery?$QS"
             echo "uploaded gallery item: $FILE"

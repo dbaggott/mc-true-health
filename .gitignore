@@ -26,4 +26,3 @@ bin/
 
 # mise local-only overrides (the committed mise.toml is the canonical pin)
 .mise.local.toml
-
