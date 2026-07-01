@@ -11,6 +11,29 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 > in reverse-chronological order for human browsing. When shipping a new release,
 > add the version's file in `.modrinth/changelogs/` *and* prepend a new section here.
 
+## [1.3.0] — 2026-07-01
+
+A new overlay: the last few hits you took.
+
+- **Recent-damage log** stacks above the HP readout. Each entry shows the
+  amount (as an un-rounded value like the HP readout) and a short label
+  for the source — mob or player name for attacks, or the environmental
+  cause (`Fell`, `Fire`, `Lava`, `Drowned`, `Explosion`, `Void`, …).
+  Newest at the bottom; older entries stack upward and fade over the
+  trailing ~2 s of a 10 s lifetime. Up to 5 entries on screen at once.
+- Amount is measured as **health + absorption delta**, so hits eaten by
+  absorption count at what the player actually felt.
+- **Two-level toggle model.** The existing keybind is now the *master*
+  switch (**Controls → TruHearts → Toggle everything (master)**) that
+  hides everything TruHearts renders in one shot. A new keybind,
+  **Toggle recent-damage log**, flips just the damage log while leaving
+  the HP readout alone. Both are unbound by default; both preferences
+  persist in `config/truhearts.json`.
+- Coupled to vanilla-hearts visibility the same way the HP readout is:
+  no vanilla hearts (creative, spectator) → no damage log.
+
+Still one jar for MC 26.1 through 26.2.
+
 ## [1.2.1] — 2026-07-01
 
 Two small fixes based on player feedback.
@@ -65,6 +88,7 @@ First stable release.
 Minecraft 26.2 with Fabric Loader 0.19.3+. Client-only — does nothing on a dedicated
 server and isn't required there.
 
+[1.3.0]: https://github.com/dbaggott/mc-truhearts/releases/tag/v1.3.0
 [1.2.1]: https://github.com/dbaggott/mc-truhearts/releases/tag/v1.2.1
 [1.2.0]: https://github.com/dbaggott/mc-truhearts/releases/tag/v1.2.0
 [1.1.0]: https://github.com/dbaggott/mc-truhearts/releases/tag/v1.1.0

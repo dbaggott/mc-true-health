@@ -15,8 +15,10 @@ import net.fabricmc.loader.api.FabricLoader;
  * lazily on first {@link #get()}; each mutation is followed by {@link #save()}
  * so the file on disk is always the live truth.
  *
- * <p>Deliberately small — one boolean today. The class exists so future
- * options extend one shape instead of accreting ad-hoc statics.
+ * <p>Two-level toggle model: {@link #enabled} is the master switch that
+ * short-circuits everything TruHearts renders; per-feature booleans
+ * ({@link #recentDamageEnabled}, …) gate individual overlays when the
+ * master is on.
  */
 public final class TruHeartsConfig {
 	private static final Path PATH =
@@ -24,10 +26,19 @@ public final class TruHeartsConfig {
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	/**
-	 * Whether the HP overlay renders. Toggled at runtime via the in-game
-	 * keybind; persisted across sessions.
+	 * Master switch — when {@code false}, nothing TruHearts renders is
+	 * visible (HP readout, damage log, any future overlay). Toggled at
+	 * runtime via the master keybind; persisted across sessions.
 	 */
 	public boolean enabled = true;
+
+	/**
+	 * Sub-toggle for the recent-damage log. Independent of {@link #enabled}:
+	 * the master switch short-circuits everything, and if the master is on
+	 * this flag decides whether the damage log specifically renders. Its
+	 * own keybind flips it in-game; persisted across sessions.
+	 */
+	public boolean recentDamageEnabled = true;
 
 	private static TruHeartsConfig instance;
 

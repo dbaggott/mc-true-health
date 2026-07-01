@@ -13,7 +13,8 @@ A small client-side Minecraft mod (Fabric) that surfaces the *real* numerical he
 - **Your own current/max HP** as a float above the heart bar (e.g. `♥ 18.5 / 20`), with trailing-zero trim so a whole-number HP reads as `20`, not `20.00`.
 - **Absorption** shown inline in gold (`+ 8`) when active.
 - **Dynamic Y-offset** clears armor + absorption rows above the heart bar — the readout never overlaps vanilla HUD.
-- **In-game toggle** — bind a key under **Controls → TruHearts → Toggle HP overlay** to hide the readout on demand. Preference persists in `config/truhearts.json`. *(v1.1.0)*
+- **In-game toggles** — bind under **Controls → TruHearts**: a *master* switch that hides everything, and per-feature sub-toggles (currently one, for the damage log). Both unbound by default; both preferences persist in `config/truhearts.json`. *(master v1.1.0, sub-toggles v1.3.0)*
+- **Recent-damage log** stacked above the HP readout: up to 5 recent hits, each with the amount and its source (mob name or environmental cause like `Fell` / `Fire` / `Lava` / `Explosion`). Amount is measured as HP+absorption delta so hits eaten by absorption still count. Newest at the bottom; each entry fades over a 10 s lifetime. *(v1.3.0)*
 
 ## Planned
 

@@ -22,9 +22,20 @@ public final class KeyBindings {
 		Identifier.fromNamespaceAndPath("truhearts", "main")
 	);
 
-	/** Toggles the HP overlay on/off in-game. */
+	/** Master toggle: turns every TruHearts overlay on/off. */
 	public static final KeyMapping TOGGLE = new KeyMapping(
 		"key.truhearts.toggle",
+		GLFW.GLFW_KEY_UNKNOWN,
+		CATEGORY
+	);
+
+	/**
+	 * Sub-toggle: turns just the recent-damage log on/off. The master
+	 * {@link #TOGGLE} still short-circuits everything when off — this only
+	 * matters when the master is on.
+	 */
+	public static final KeyMapping TOGGLE_DAMAGE_LOG = new KeyMapping(
+		"key.truhearts.toggle_damage_log",
 		GLFW.GLFW_KEY_UNKNOWN,
 		CATEGORY
 	);
@@ -34,5 +45,6 @@ public final class KeyBindings {
 
 	public static void register() {
 		KeyMappingHelper.registerKeyMapping(TOGGLE);
+		KeyMappingHelper.registerKeyMapping(TOGGLE_DAMAGE_LOG);
 	}
 }

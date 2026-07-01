@@ -1,6 +1,9 @@
 {
 	"key.category.truhearts.main": "TruHearts",
-	"key.truhearts.toggle": "Toggle HP overlay",
+	"key.truhearts.toggle": "Toggle everything (master)",
+	"key.truhearts.toggle_damage_log": "Toggle recent-damage log",
 	"truhearts.toggle.on": "TruHearts: on",
-	"truhearts.toggle.off": "TruHearts: off"
+	"truhearts.toggle.off": "TruHearts: off",
+	"truhearts.toggle.damage_log.on": "Damage log: on",
+	"truhearts.toggle.damage_log.off": "Damage log: off"
 }
