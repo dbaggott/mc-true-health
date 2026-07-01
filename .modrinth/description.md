@@ -13,6 +13,7 @@ That's it. One small overlay, one line of text. Half-second to learn, instant to
 - **Your current HP as a float**, with up to two decimals. Whole values trim cleanly: `20`, not `20.00`. Single-decimal values trim the trailing zero: `18.5`, not `18.50`. Two-decimal precision when the value warrants it: `12.34`.
 - **Absorption appears inline in gold** when active — `♥ 18.5 / 20 + 8` after an enchanted golden apple, or whatever you've topped up with. Disappears when your absorption runs out.
 - **The overlay sits in the right place at all times.** Wearing armor? It shifts up a row to clear the armor icons. Got absorption hearts? Another row up. Both? Both rows. No collision with the vanilla HUD, ever.
+- **Toggle it on or off in-game.** A keybind under **Controls → TruHearts → Toggle HP overlay** hides the readout when you want the vanilla view back — for a screenshot, for a purist run, or just because. Unbound by default; assign it to whatever key you like. Preference sticks between sessions.
 
 ## Why you might want this
 

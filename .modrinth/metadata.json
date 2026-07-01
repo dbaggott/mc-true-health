@@ -2,7 +2,7 @@
   "title": "TruHearts",
   "slug": "dnbg-truhearts",
 
-  "description": "Real (un-rounded) health above your heart bar.",
+  "description": "Real (un-rounded) health above your heart bar; toggle on/off with a keybind.",
 
   "source_url": "https://github.com/dbaggott/mc-truhearts",
   "issues_url": "https://github.com/dbaggott/mc-truhearts/issues",
@@ -10,8 +10,8 @@
   "license_id": "MIT",
 
   "categories": [
-    "utility",
-    "game-mechanics"
+    "game-mechanics",
+    "utility"
   ],
 
   "client_side": "required",
