@@ -55,11 +55,20 @@ public final class DamageLog {
 
 	/**
 	 * Baseline total (HP + absorption) captured at the end of the last
-	 * client tick, used to compute damage amount when a damage event fires.
-	 * Kept fresh by {@link #onClientTickEnd(LocalPlayer)} so healing and
-	 * regen between events don't leak into the next event's delta.
+	 * client tick, used to compute damage amount when
+	 * {@link #onClientTickEnd(LocalPlayer)} realizes a pending damage
+	 * event. Kept fresh so healing and regen between events don't leak
+	 * into the next event's delta.
 	 */
 	private static float baselineTotal = Float.NaN;
+
+	/**
+	 * Damage source captured by the mixin during packet processing,
+	 * pending realization at end-of-tick when HP has caught up. Overwritten
+	 * on repeat damage in the same tick — see {@link #onDamageEvent(DamageSource)}
+	 * for the trade-off.
+	 */
+	private static DamageSource pendingSource;
 
 	private DamageLog() {
 	}
@@ -74,43 +83,62 @@ public final class DamageLog {
 
 	/**
 	 * Called by {@code DamageEventMixin} on the client's main thread when
-	 * a damage event fires for the local player. Computes the amount from
-	 * the total-pool delta since the last observation and records the entry
-	 * if the delta is positive (i.e. the player actually lost pool — hits
-	 * fully mitigated by resistance/blocking/immunity have a zero delta and
-	 * we skip them here to keep the log signal-heavy).
+	 * a damage event fires for the local player. We just stash the source
+	 * here; the delta is computed in {@link #onClientTickEnd(LocalPlayer)}.
+	 *
+	 * <p><b>Why deferred:</b> the server sends {@code ClientboundDamageEventPacket}
+	 * from inside {@code LivingEntity.hurtServer}, before the player's
+	 * synchronized HP update goes out as a {@code ClientboundSetHealthPacket}
+	 * later in the server tick. Client-side, this means the mixin fires
+	 * BEFORE {@code player.getHealth()} reflects the new value — computing
+	 * the delta at the mixin site gives 0 for every event and every entry
+	 * gets skipped. By end-of-tick, SetHealth has been processed and the
+	 * delta is accurate.
+	 *
+	 * <p>Multiple damage events in one client tick: the last source wins.
+	 * The delta at tick end covers the total pool change, so it's attributed
+	 * to the most recent source — imperfect for the rare "two hits landed
+	 * in one tick" case, but simple and correct for the common case.
 	 */
 	public static void onDamageEvent(DamageSource source) {
-		Minecraft mc = Minecraft.getInstance();
-		LocalPlayer player = mc.player;
-		if (player == null) {
-			return;
-		}
-		float currentTotal = totalPool(player);
-		float amount = Float.isNaN(baselineTotal) ? 0f : baselineTotal - currentTotal;
-		baselineTotal = currentTotal;
-		if (amount <= 0.0001f) {
-			return;
-		}
-		entries.addFirst(new Entry(amount, labelFor(source), System.nanoTime()));
-		while (entries.size() > BUFFER_SIZE) {
-			entries.removeLast();
-		}
+		pendingSource = source;
 	}
 
 	/**
-	 * End-of-tick hook. Keeps {@link #baselineTotal} tracking the player's
-	 * current pool so between-tick regen or healing doesn't get charged to
-	 * the next damage event.
+	 * End-of-tick hook. If the player's pool dropped since the last
+	 * observation, log the drop against the best damage source we have:
+	 * the mixin-captured source if it fired this tick, otherwise
+	 * {@link LivingEntity#getLastDamageSource()} which vanilla itself
+	 * populates from inside {@code handleDamageEvent}. The vanilla getter
+	 * is our defense-in-depth path for any case where the mixin doesn't
+	 * apply — the log still surfaces a labeled entry.
+	 *
+	 * <p>Then reset the baseline so between-event regen or healing doesn't
+	 * get charged to the next event's delta.
 	 */
 	public static void onClientTickEnd(LocalPlayer player) {
-		baselineTotal = totalPool(player);
+		float currentTotal = totalPool(player);
+		float amount = Float.isNaN(baselineTotal) ? 0f : baselineTotal - currentTotal;
+		if (amount > 0.0001f) {
+			DamageSource source = pendingSource != null
+				? pendingSource
+				: player.getLastDamageSource();
+			if (source != null) {
+				entries.addFirst(new Entry(amount, labelFor(source), System.nanoTime()));
+				while (entries.size() > BUFFER_SIZE) {
+					entries.removeLast();
+				}
+			}
+		}
+		pendingSource = null;
+		baselineTotal = currentTotal;
 	}
 
 	/** Cleared on world exit / disconnect via {@code TruHeartsClient}. */
 	public static void reset() {
 		entries.clear();
 		baselineTotal = Float.NaN;
+		pendingSource = null;
 	}
 
 	private static float totalPool(LocalPlayer player) {
