@@ -21,24 +21,25 @@ import net.minecraft.network.chat.Component;
  * single jar targets both MC lines.
  *
  * <p><b>Bonus:</b> we own the lifetime and fade curve here directly.
- * Vanilla's {@code setOverlayMessage} hardcodes 60 ticks with no knob.
+ * Vanilla's {@code setOverlayMessage} hardcodes its duration with no
+ * knob; tune the constants below when the feel wants adjusting.
  *
  * <p>Positioned above the hotbar to mimic vanilla's held-item slot so
  * the "TruHearts: on/off" message reads in a familiar location.
  */
 public final class ToggleToast {
 	/**
-	 * Default lifetime — a toggle confirmation is a peripheral cue, so
-	 * hold it just long enough to notice (1 s at full opacity) and let
-	 * it fade out over the next 0.5 s. 1.5 s total, roughly half of
-	 * vanilla's ~3 s {@code setOverlayMessage} hold.
-	 *
-	 * <p>Wall-clock rather than tick-based so the message expires even
-	 * through frame-rate hitches — a client tick can be arbitrarily slow,
-	 * but a 1.5 s toast should still last 1.5 s.
+	 * Total lifetime of the toast — peripheral cue for a keypress
+	 * confirmation. Wall-clock rather than tick-based so the toast
+	 * expires when intended even through frame-rate hitches; a client
+	 * tick can be arbitrarily slow.
 	 */
-	private static final long DEFAULT_LIFETIME_NANOS = 1_500_000_000L;
-	/** Trailing fade-out window inside {@link #DEFAULT_LIFETIME_NANOS}. */
+	private static final long DEFAULT_LIFETIME_NANOS = 500_000_000L;
+	/**
+	 * Trailing fade-out window inside {@link #DEFAULT_LIFETIME_NANOS}.
+	 * If it equals the lifetime, the entire toast is a linear fade with
+	 * no full-opacity hold plateau.
+	 */
 	private static final long FADE_OUT_NANOS = 500_000_000L;
 	/**
 	 * Y offset from the screen bottom — matches the vertical band vanilla's
