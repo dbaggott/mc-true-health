@@ -1,22 +1,22 @@
 [
   {
     "file": "02-fractional-hp.png",
-    "title": "Real HP, two decimals",
-    "description": "Float HP rendered above the heart bar. The vanilla heart row reads 7 hearts (14); TruHearts shows 14.02 — the value Minecraft is actually computing.",
+    "title": "Shows your real health, unrounded",
+    "description": "Minecraft will always round your health but, with TruHealth, you always see your real health.",
     "featured": true,
     "ordering": 0
   },
   {
     "file": "03-absorption-active.png",
-    "title": "Absorption inline, in gold",
+    "title": "Shows absorption too",
     "description": "When absorption is active (golden apple etc.), the overlay extends with `+ N` in gold so you see the hidden float behind the gold hearts.",
     "featured": false,
     "ordering": 1
   },
   {
     "file": "01-hud-in-action.png",
-    "title": "Y-offset clears armor and absorption rows",
-    "description": "The overlay automatically steps up to clear armor icons and gold absorption hearts so it never overlaps vanilla HUD.",
+    "title": "Does not hide armor and absorption rows",
+    "description": "The overlay automatically moves to avoid overlapping the vanilla HUD.",
     "featured": false,
     "ordering": 2
   }
