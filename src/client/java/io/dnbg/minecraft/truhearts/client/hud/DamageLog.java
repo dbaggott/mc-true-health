@@ -99,6 +99,20 @@ public final class DamageLog {
 	private static DamageSource pendingSource;
 
 	/**
+	 * How many client ticks have passed since {@link #pendingSource} was
+	 * last set by the mixin. We delay attribution by one tick because
+	 * {@code ClientboundSetEntityDataPacket} for the absorption drop can
+	 * arrive up to a tick after {@code ClientboundSetHealthPacket} —
+	 * computing the delta on the same tick as the mixin fire can under-
+	 * credit absorption-eaten hits (HP dropped, abs still stale).
+	 * Waiting a tick lets all this-damage packets settle.
+	 *
+	 * <p>{@code -1} = idle; {@code 0} = mixin fired this tick, waiting;
+	 * {@code >=1} = ready to log at next tick end.
+	 */
+	private static int pendingTicks = -1;
+
+	/**
 	 * Whether the player was alive at the end of the previous tick. Used to
 	 * detect the moment of death (alive → not alive transition) and drop a
 	 * {@link Type#DEATH death marker} into the log, and to suppress the
@@ -138,6 +152,11 @@ public final class DamageLog {
 	 */
 	public static void onDamageEvent(DamageSource source) {
 		pendingSource = source;
+		// Reset the delay counter. If a NEW hit arrives while the previous
+		// one is still waiting, extend the window — combined delta attributes
+		// to the most recent source (imperfect but simple; see the record's
+		// javadoc for the multi-hit trade-off).
+		pendingTicks = 0;
 	}
 
 	/**
@@ -155,36 +174,47 @@ public final class DamageLog {
 	public static void onClientTickEnd(LocalPlayer player) {
 		float currentHP = player.getHealth();
 		float currentTotal = totalPool(player);
-		float damageDelta = Float.isNaN(baselineTotal) ? 0f : baselineTotal - currentTotal;
-		float healDelta = Float.isNaN(baselineHP) ? 0f : currentHP - baselineHP;
 		boolean isAlive = currentHP > 0f;
 		// The tick after death when HP snaps from 0 back to full is a respawn,
 		// not a heal — suppress it so the log doesn't get a spurious "+ 20 Healed".
 		boolean isRespawn = !wasAlive && isAlive;
 
-		// DAMAGE: require pendingSource. Without it, a pool drop is one of
-		// {milk-bucket clearing absorption, Absorption / Health Boost effect
-		// expiring, /effect clear} — none of which are damage. Attributing
-		// the drop to player.getLastDamageSource() would surface a spurious
-		// entry with a stale source label. Erring on the side of a missed
-		// entry beats a wrong one.
-		if (damageDelta > 0.0001f && pendingSource != null) {
-			addEntry(new Entry(damageDelta, labelFor(pendingSource), System.nanoTime(), Type.DAMAGE));
-		} else if (healDelta > 0.0001f && !isRespawn) {
-			// HEAL uses HP-only delta, not totalPool. So absorption gains
-			// (golden apple's initial +N absorption) don't count as heals;
-			// the regen ticks that follow, if the player was actually
-			// injured, will log the real HP recovery.
-			addOrCoalesceHeal(healDelta, healLabelFor(player));
+		// DAMAGE PATH: pendingSource means the mixin fired this-tick-or-last.
+		// We delay attribution by one tick so ClientboundSetEntityDataPacket
+		// for absorption has time to arrive after ClientboundDamageEventPacket
+		// (they aren't co-tick guaranteed — server-tick timing can put the
+		// entity-data update a tick behind). Without the delay, absorption-
+		// eaten hits under-credit because HP has dropped but absorption is
+		// still stale when we read it here.
+		//
+		// Baseline is frozen while pendingSource is set, so the delta we
+		// compute at tick-N+1 end is against the pre-hit pool captured at
+		// tick-N-1 end.
+		if (pendingSource != null) {
+			if (pendingTicks == 0) {
+				// First tick — arm and wait one more tick for lagging packets.
+				pendingTicks = 1;
+			} else {
+				float damageDelta = Float.isNaN(baselineTotal) ? 0f : baselineTotal - currentTotal;
+				if (damageDelta > 0.0001f) {
+					addEntry(new Entry(damageDelta, labelFor(pendingSource), System.nanoTime(), Type.DAMAGE));
+				}
+				pendingSource = null;
+				pendingTicks = -1;
+			}
+		} else {
+			// HEAL uses HP-only delta, not totalPool. Absorption gains (golden
+			// apple's initial +N absorption) don't count as heals; the regen
+			// ticks that follow, if the player was injured, log the real HP
+			// recovery.
+			float healDelta = Float.isNaN(baselineHP) ? 0f : currentHP - baselineHP;
+			if (healDelta > 0.0001f && !isRespawn) {
+				addOrCoalesceHeal(healDelta, healLabelFor(player));
+			}
 		}
 
-		// Death detection — alive → dead transition on this tick. The killing
-		// damage entry was just added above; the death marker follows it so
-		// the "you died here" line is unmistakably distinct from any hit that
-		// happened to bring you low. For attribution here we do keep the
-		// getLastDamageSource() fallback — an ambient-death case (/kill,
-		// void-below-void) is rare and "Died to <stale label>" is more
-		// useful than "Died".
+		// Death detection — alive → dead transition. Independent of the
+		// damage/heal path so it fires even mid-delay-window.
 		if (wasAlive && !isAlive) {
 			DamageSource killer = pendingSource != null
 				? pendingSource
@@ -194,9 +224,13 @@ public final class DamageLog {
 		}
 		wasAlive = isAlive;
 
-		pendingSource = null;
-		baselineHP = currentHP;
-		baselineTotal = currentTotal;
+		// Freeze the baseline while a damage attribution is still waiting.
+		// Otherwise the "pre-hit pool" would drift under the pending event
+		// and the delta computed next tick would be zero.
+		if (pendingSource == null) {
+			baselineHP = currentHP;
+			baselineTotal = currentTotal;
+		}
 	}
 
 	private static void addEntry(Entry e) {
@@ -249,6 +283,7 @@ public final class DamageLog {
 		baselineHP = Float.NaN;
 		baselineTotal = Float.NaN;
 		pendingSource = null;
+		pendingTicks = -1;
 		wasAlive = true;
 	}
 
