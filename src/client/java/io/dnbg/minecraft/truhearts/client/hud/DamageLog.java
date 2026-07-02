@@ -345,6 +345,8 @@ public final class DamageLog {
 			case "sonic_boom" -> "Sonic boom";
 			case "fallingBlock", "anvil", "fallingStalactite" -> "Falling block";
 			case "sweetBerryBush" -> "Berry bush";
+			case "flyIntoWall" -> "Kinetic energy";
+			case "dryOut" -> "Dry drowning";
 			case "outOfWorld" -> "Void";
 			default -> capitalize(source.getMsgId());
 		};
