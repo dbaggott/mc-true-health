@@ -2,7 +2,7 @@
   {
     "file": "02-fractional-hp.png",
     "title": "Shows your real health, unrounded",
-    "description": "Minecraft will always round your health but, with TruHealth, you always see your real health.",
+    "description": "Minecraft rounds your HP so your true health is hidden, but with TruHearts, you see the real value.",
     "featured": true,
     "ordering": 0
   },
