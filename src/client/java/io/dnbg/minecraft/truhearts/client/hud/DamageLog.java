@@ -334,7 +334,7 @@ public final class DamageLog {
 			case "starve" -> "Starved";
 			case "cactus" -> "Cactus";
 			case "hotFloor" -> "Magma block";
-			case "cramming" -> "Crushed";
+			case "cramming" -> "Entity cramming";
 			case "inWall" -> "Suffocation";
 			case "explosion", "explosion.player" -> "Explosion";
 			case "magic", "indirectMagic" -> "Magic";
