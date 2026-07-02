@@ -334,14 +334,14 @@ public final class DamageLog {
 		return switch (source.getMsgId()) {
 			case "inFire", "onFire" -> "Fire";
 			case "drown" -> "Drowning";
-			case "starve" -> "Starved";
+			case "starve" -> "Starvation";
 			case "hotFloor" -> "Magma block";
 			case "cramming" -> "Entity cramming";
 			case "inWall" -> "Suffocation";
 			case "explosion", "explosion.player" -> "Explosion";
 			case "magic", "indirectMagic" -> "Magic";
 			case "lightningBolt" -> "Lightning";
-			case "freeze" -> "Froze";
+			case "freeze" -> "Freezing";
 			case "sonic_boom" -> "Sonic boom";
 			case "fallingBlock", "anvil", "fallingStalactite" -> "Falling block";
 			case "sweetBerryBush" -> "Berry bush";
